@@ -10,10 +10,11 @@ repo ao lado da config do Neovim por conveniência. Não é um plugin de nvim.
 ## O que tem aqui
 
 - `nvim-open.sh` — hook `PostToolUse`. Recebe o caminho do arquivo que o Claude
-  tocou, acha a instância nvim viva pelos sockets automáticos em
-  `/tmp/nvim.$USER/*/nvim.*.0` (preferindo a que tem `getcwd()` compatível com
-  o arquivo) e abre o arquivo via `nvim --server <socket> --remote`, mais um
-  `:checktime` pra recarregar o buffer se já estava aberto. Ignora binários
+  tocou, acha a instância nvim viva pelos sockets automáticos que o nvim cria
+  (procura em `$TMPDIR/nvim.$USER/`, `$XDG_RUNTIME_DIR/nvim.$USER/` e
+  `/tmp/nvim.$USER/` — no macOS é o `$TMPDIR`), preferindo a que tem `getcwd()`
+  compatível com o arquivo, e abre via `nvim --server <socket> --remote`, mais
+  um `:checktime` pra recarregar o buffer se já estava aberto. Ignora binários
   (imagens, PDF, zip, fontes).
 - `settings.example.json` — o bloco `hooks` que registra o script.
 

@@ -1,0 +1,9 @@
+# Zero Cool — preto + amarelo hazard (ref: Hackers 1995)
+theme = zerocool
+
+# fundo preto translúcido (sutil, pra manter legível)
+background-opacity = 0.9
+
+# Nerd Font (ícones do Neovim/LazyVim)
+font-family = "Hack Nerd Font Mono"
+font-size = 14

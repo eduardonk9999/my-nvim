@@ -1,0 +1,28 @@
+# Zero Cool — black + hazard yellow (ref: Hackers 1995)
+# fundo preto, fonte amarelo-hazard, acentos ciano e vermelho.
+
+palette = 0=#141400
+palette = 1=#ff2b2b
+palette = 2=#b5e000
+palette = 3=#f5e400
+palette = 4=#39c6f0
+palette = 5=#ff3ba3
+palette = 6=#38e0e0
+palette = 7=#ede8b0
+palette = 8=#5c5416
+palette = 9=#ff6b6b
+palette = 10=#d4ff3b
+palette = 11=#fff45c
+palette = 12=#7fe0ff
+palette = 13=#ff8fd4
+palette = 14=#7ff5f5
+palette = 15=#fffde6
+
+background = #000000
+foreground = #f5e400
+
+cursor-color = #f5e400
+cursor-text = #000000
+
+selection-foreground = #f5e400
+selection-background = #3a3400

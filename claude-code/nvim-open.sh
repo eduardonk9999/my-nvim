@@ -1,12 +1,9 @@
 #!/bin/bash
 # Claude Code PostToolUse hook (Read|Edit|Write|NotebookEdit):
 # abre no Neovim o arquivo que o Claude acabou de ler/editar.
-# Descobre a instância nvim certa pelos sockets automáticos em /tmp/nvim.$USER/,
-# preferindo a instância cujo getcwd() contém o arquivo. Se só houver uma
-# instância viva, usa ela mesmo sem match de diretório.
-#
-# Instalação: copie para ~/.claude/hooks/nvim-open.sh e registre o hook
-# em ~/.claude/settings.json (veja settings.example.json). Precisa de `jq`.
+# Descobre a instância nvim certa pelos sockets automáticos que o nvim cria,
+# preferindo a que tem getcwd() contendo o arquivo. Se só houver uma viva,
+# usa ela mesmo sem match de diretório.
 
 file=$(jq -r '.tool_input.file_path // .tool_response.filePath // empty')
 [ -z "$file" ] || [ ! -f "$file" ] && exit 0
@@ -16,17 +13,27 @@ case "${file##*.}" in
   png|jpg|jpeg|gif|webp|ico|pdf|zip|gz|tar|woff|woff2|ttf|eot|mp4|mp3|ipynb) exit 0 ;;
 esac
 
+# Bases onde o nvim cria o socket automático (varia por SO/sessão):
+#   macOS: $TMPDIR/nvim.$USER/<rand>/nvim.<pid>.0
+#   Linux: $XDG_RUNTIME_DIR/nvim.$USER/...  ou  /tmp/nvim.$USER/...
+bases=()
+[ -n "$TMPDIR" ] && bases+=("${TMPDIR%/}/nvim.$USER")
+[ -n "$XDG_RUNTIME_DIR" ] && bases+=("${XDG_RUNTIME_DIR%/}/nvim.$USER")
+bases+=("/tmp/nvim.$USER")
+
 live_socks=()
 match_sock=""
 
-for sock in /tmp/nvim."$USER"/*/nvim.*.0; do
-  [ -S "$sock" ] || continue
-  cwd=$(nvim --server "$sock" --remote-expr 'getcwd()' 2>/dev/null) || continue
-  [ -z "$cwd" ] && continue
-  live_socks+=("$sock")
-  case "$file" in
-    "$cwd"/*) match_sock="$sock"; break ;;
-  esac
+for base in "${bases[@]}"; do
+  for sock in "$base"/*/nvim.*.0; do
+    [ -S "$sock" ] || continue
+    cwd=$(nvim --server "$sock" --remote-expr 'getcwd()' 2>/dev/null) || continue
+    [ -z "$cwd" ] && continue
+    live_socks+=("$sock")
+    case "$file" in
+      "$cwd"/*) match_sock="$sock"; break 2 ;;
+    esac
+  done
 done
 
 if [ -z "$match_sock" ]; then
